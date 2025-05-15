@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>QR Code Generator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-dark: #4338ca;
+            --secondary: #0ea5e9;
+            --dark: #0f172a;
+            --light: #f8fafc;
+            --success: #10b981;
+            --danger: #ef4444;
+            --card-bg: rgba(255, 255, 255, 0.15);
+            --input-bg: rgba(255, 255, 255, 0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            min-height: 100vh;
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e40af 100%);
+            background-size: 200% 200%;
+            animation: gradientBG 15s ease infinite;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--light);
+            padding: 20px;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .container {
+            max-width: 480px;
+            width: 100%;
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+            padding: 40px;
+            transform: translateY(0);
+            animation: floatIn 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        @keyframes floatIn {
+            0% { opacity: 0; transform: translateY(30px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .app-logo {
+            margin-bottom: 16px;
+            animation: pulse 3s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        h1 {
+            font-weight: 700;
+            font-size: 28px;
+            margin-bottom: 8px;
+            background: linear-gradient(90deg, var(--secondary), var(--primary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .subtitle {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 24px;
+        }
+
+        /* Form Elements */
+        .form-group {
+            position: relative;
+            margin-bottom: 24px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 16px 20px 16px 48px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: var(--input-bg);
+            color: var(--light);
+            font-size: 16px;
+            transition: all 0.3s;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.3);
+        }
+
+        .form-input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 14px rgba(79, 70, 229, 0.4);
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(79, 70, 229, 0.5);
+        }
+
+        .btn:active {
+            transform: translateY(1px);
+        }
+
+        .btn .btn-text {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn .btn-icon {
+            margin-right: 8px;
+        }
+
+        .ripple {
+            position: absolute;
+            border-radius: 50%;
+            transform: scale(0);
+            animation: ripple 0.6s linear;
+            background: rgba(255, 255, 255, 0.4);
+        }
+
+        @keyframes ripple {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+
+        /* QR Result Section */
+        .qr-result {
+            margin-top: 32px;
+            text-align: center;
+            min-height: 200px;
+        }
+
+        .result-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            opacity: 0;
+            animation: fadeIn 0.5s 0.2s forwards;
+        }
+
+        .qr-container {
+            background: white;
+            padding: 16px;
+            border-radius: 16px;
+            display: inline-block;
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+            position: relative;
+            opacity: 0;
+            transform: scale(0.9);
+            animation: scaleIn 0.5s 0.3s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+
+        @keyframes scaleIn {
+            to { 
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .qr-image {
+            max-width: 100%;
+            max-height: 240px;
+            border-radius: 8px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+            opacity: 0;
+            animation: fadeIn 0.5s 0.4s forwards;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 12px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .action-btn-primary {
+            background: var(--primary);
+            color: white;
+            border: none;
+            box-shadow: 0 4px 10px rgba(79, 70, 229, 0.3);
+        }
+
+        .action-btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--light);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .action-btn i {
+            margin-right: 6px;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Spinner */
+        .spinner {
+            width: 48px;
+            height: 48px;
+            margin: 40px auto;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--primary);
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Options Panel */
+        .options-panel {
+            margin-top: 24px;
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+            padding-top: 24px;
+        }
+
+        .options-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .options-title i {
+            margin-right: 8px;
+            transition: transform 0.3s;
+        }
+
+        .options-title.collapsed i {
+            transform: rotate(-90deg);
+        }
+
+        .options-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            overflow: hidden;
+            max-height: 500px;
+            transition: max-height 0.3s ease;
+        }
+
+        .options-content.collapsed {
+            max-height: 0;
+        }
+
+        .option-group {
+            margin-bottom: 16px;
+        }
+
+        .option-label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .option-input {
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: var(--input-bg);
+            color: var(--light);
+            font-size: 14px;
+        }
+
+        .color-option {
+            display: flex;
+            align-items: center;
+        }
+
+        .color-preview {
+            width: 24px;
+            height: 24px;
+            border-radius: 6px;
+            margin-right: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: rgba(16, 185, 129, 0.9);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            opacity: 0;
+            transition: all 0.3s;
+            z-index: 100;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        .toast i {
+            margin-right: 8px;
+        }
+
+        .toast.error {
+            background: rgba(239, 68, 68, 0.9);
+        }
+
+        /* Responsive */
+        @media (max-width: 580px) {
+            .container {
+                padding: 24px;
+                border-radius: 20px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .subtitle {
+                font-size: 13px;
+            }
+
+            .options-content {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main class="container" role="main" aria-label="QR Code Generator">
+        <header>
+            <div class="app-logo">
+                <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="8" y="8" width="20" height="20" rx="2" fill="#4F46E5" />
+                    <rect x="36" y="8" width="20" height="20" rx="2" fill="#4F46E5" />
+                    <rect x="8" y="36" width="20" height="20" rx="2" fill="#4F46E5" />
+                    <rect x="36" y="36" width="8" height="8" rx="1" fill="#4F46E5" />
+                    <rect x="48" y="36" width="8" height="8" rx="1" fill="#4F46E5" />
+                    <rect x="36" y="48" width="8" height="8" rx="1" fill="#4F46E5" />
+                    <rect x="48" y="48" width="8" height="8" rx="1" fill="#4F46E5" />
+                </svg>
+            </div>
+            <h1>QR Code Generator</h1>
+            <p class="subtitle">Create customized QR codes in seconds</p>
+        </header>
+
+        <form id="qrForm" autocomplete="off">
+            <div class="form-group">
+                <input type="text" id="qrData" class="form-input" placeholder="Enter text, URL or contact information" 
+                    aria-label="QR Code content" required />
+                <i class="fa-solid fa-link input-icon"></i>
+            </div>
+
+            <button type="submit" class="btn" id="generateBtn">
+                <span class="btn-text">
+                    <i class="fa-solid fa-qrcode btn-icon"></i>
+                    Generate QR Code
+                </span>
+            </button>
+
+            <div class="options-panel">
+                <div class="options-title" id="optionsToggle">
+                    <i class="fa-solid fa-cog"></i>
+                    Advanced Options
+                </div>
+                <div class="options-content collapsed" id="optionsContent">
+                    <div class="option-group">
+                        <label class="option-label" for="qrSize">QR Size</label>
+                        <select id="qrSize" class="option-input">
+                            <option value="300">Medium (300×300)</option>
+                            <option value="200">Small (200×200)</option>
+                            <option value="400">Large (400×400)</option>
+                            <option value="500">X-Large (500×500)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="option-group">
+                        <label class="option-label" for="qrCorrection">Error Correction</label>
+                        <select id="qrCorrection" class="option-input">
+                            <option value="M">Medium (M)</option>
+                            <option value="L">Low (L)</option>
+                            <option value="Q">Quartile (Q)</option>
+                            <option value="H">High (H)</option>
+                        </select>
+                    </div>
+
+                    <div class="option-group">
+                        <label class="option-label" for="qrFgColor">Foreground Color</label>
+                        <div class="color-option">
+                            <div class="color-preview" id="fgColorPreview" style="background-color: #000000"></div>
+                            <input type="color" id="qrFgColor" class="option-input" value="#000000" />
+                        </div>
+                    </div>
+
+                    <div class="option-group">
+                        <label class="option-label" for="qrBgColor">Background Color</label>
+                        <div class="color-option">
+                            <div class="color-preview" id="bgColorPreview" style="background-color: #FFFFFF"></div>
+                            <input type="color" id="qrBgColor" class="option-input" value="#FFFFFF" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        <div class="qr-result" id="qrResult" aria-live="polite" aria-atomic="true"></div>
+        
+        <div class="toast" id="toast" role="alert">
+            <i class="fa-solid fa-check"></i>
+            <span id="toastMessage">QR code downloaded successfully!</span>
+        </div>
+    </main>
+
+    <script>
+        // DOM Elements
+        const qrForm = document.getElementById('qrForm');
+        const qrResult = document.getElementById('qrResult');
+        const optionsToggle = document.getElementById('optionsToggle');
+        const optionsContent = document.getElementById('optionsContent');
+        const toast = document.getElementById('toast');
+        const qrFgColor = document.getElementById('qrFgColor');
+        const qrBgColor = document.getElementById('qrBgColor');
+        const fgColorPreview = document.getElementById('fgColorPreview');
+        const bgColorPreview = document.getElementById('bgColorPreview');
+
+        // Toggle advanced options
+        optionsToggle.addEventListener('click', () => {
+            optionsToggle.classList.toggle('collapsed');
+            optionsContent.classList.toggle('collapsed');
+        });
+
+        // Color picker previews
+        qrFgColor.addEventListener('input', (e) => {
+            fgColorPreview.style.backgroundColor = e.target.value;
+        });
+        
+        qrBgColor.addEventListener('input', (e) => {
+            bgColorPreview.style.backgroundColor = e.target.value;
+        });
+
+        // Ripple effect for buttons
+        document.querySelectorAll('.btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                const rect = this.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                const ripple = document.createElement('span');
+                ripple.classList.add('ripple');
+                ripple.style.left = `${x}px`;
+                ripple.style.top = `${y}px`;
+                
+                this.appendChild(ripple);
+                
+                // Remove ripple after animation
+                setTimeout(() => {
+                    ripple.remove();
+                }, 600);
+            });
+        });
+
+        // Show toast notification
+        function showToast(message, isError = false) {
+            const toastMessage = document.getElementById('toastMessage');
+            toastMessage.textContent = message;
+            
+            toast.className = 'toast';
+            if (isError) {
+                toast.classList.add('error');
+                toast.querySelector('i').className = 'fa-solid fa-xmark';
+            } else {
+                toast.querySelector('i').className = 'fa-solid fa-check';
+            }
+            
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Download QR code
+        function downloadQR(dataUrl, fileName) {
+            const link = document.createElement('a');
+            link.href = dataUrl;
+            link.download = fileName;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            showToast('QR code downloaded successfully!');
+        }
+
+        // Copy QR data
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showToast('Content copied to clipboard!');
+            }).catch(err => {
+                showToast('Failed to copy content', true);
+            });
+        }
+
+        // QR code generation
+        qrForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const qrData = document.getElementById('qrData').value.trim();
+            if (!qrData) {
+                showToast('Please enter some content for the QR code', true);
+                return;
+            }
+            
+            qrResult.innerHTML = '<div class="spinner" role="status" aria-label="Generating QR code"></div>';
+            
+            const size = document.getElementById('qrSize').value;
+            const correction = document.getElementById('qrCorrection').value;
+            const fgColor = qrFgColor.value.replace('#', '');
+            const bgColor = qrBgColor.value.replace('#', '');
+            
+            try {
+                // In a real app, we'd use these parameters in the API call
+                const formData = new FormData();
+                formData.append('data', qrData);
+                formData.append('size', size);
+                formData.append('correction', correction);
+                formData.append('fgColor', fgColor);
+                formData.append('bgColor', bgColor);
+
+                // Simulate API call (would be a real fetch in production)
+                // For demo purposes, we'll use a publicly available QR generator API
+                const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(qrData)}&size=${size}x${size}&color=${fgColor}&bgcolor=${bgColor}&ecc=${correction}`;
+                
+                // Simulate delay
+                await new Promise(resolve => setTimeout(resolve, 800));
+                
+                // Display the QR code
+                qrResult.innerHTML = `
+                    <h3 class="result-title">Your QR Code is Ready</h3>
+                    <div class="qr-container">
+                        <img src="${qrUrl}" alt="Generated QR Code" class="qr-image" id="qrImage" />
+                    </div>
+                    <div class="action-buttons">
+                        <button class="action-btn action-btn-primary" id="downloadBtn">
+                            <i class="fa-solid fa-download"></i> Download
+                        </button>
+                        <button class="action-btn action-btn-secondary" id="copyBtn">
+                            <i class="fa-solid fa-copy"></i> Copy Data
+                        </button>
+                    </div>
+                `;
+                
+                // Add event listeners for action buttons
+                document.getElementById('downloadBtn').addEventListener('click', () => {
+                    downloadQR(qrUrl, 'qrcode.png');
+                });
+                
+                document.getElementById('copyBtn').addEventListener('click', () => {
+                    copyToClipboard(qrData);
+                });
+                
+            } catch (error) {
+                console.error('Error:', error);
+                qrResult.innerHTML = `
+                    <div style="color: var(--danger); text-align: center; padding: 20px;">
+                        <i class="fa-solid fa-triangle-exclamation" style="font-size: 32px; margin-bottom: 16px;"></i>
+                        <p>Error generating QR code. Please try again.</p>
+                    </div>
+                `;
+                showToast('Failed to generate QR code', true);
+            }
+        });
+
+        // Initialize default values
+        document.addEventListener('DOMContentLoaded', () => {
+            // Set default options
+            document.getElementById('qrSize').value = '300';
+            document.getElementById('qrCorrection').value = 'M';
+        });
+    </script>
+</body>
+</html>

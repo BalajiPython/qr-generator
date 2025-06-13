@@ -458,7 +458,7 @@
                         </select>
                     </div>
                     
-                    <!-- <div class="option-group">
+                    <div class="option-group">
                         <label class="option-label" for="qrCorrection">Error Correction</label>
                         <select id="qrCorrection" class="option-input">
                             <option value="M">Medium (M)</option>
@@ -466,7 +466,7 @@
                             <option value="Q">Quartile (Q)</option>
                             <option value="H">High (H)</option>
                         </select>
-                    </div> -->
+                    </div>
 
                     <div class="option-group">
                         <label class="option-label" for="qrFgColor">Foreground Color</label>
@@ -659,22 +659,6 @@
             document.getElementById('qrSize').value = '300';
             document.getElementById('qrCorrection').value = 'M';
         });
-
-        function generateQR() {
-    const inputText = document.getElementById('qrText').value;
-    const qrSize = parseInt(document.getElementById('qrSize').value);
-    const darkColor = document.getElementById('darkColor').value;
-    const lightColor = document.getElementById('lightColor').value;
-
-    if (inputText) {
-        qr.make({
-            text: inputText,
-            size: qrSize,
-            colorDark: darkColor,
-            colorLight: lightColor
-        });
-    }
-}
     </script>
 </body>
 </html>

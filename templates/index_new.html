@@ -4,33 +4,19 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>QR Code Generator</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
     <style>
         :root {
-            --primary: #6366f1;
-            --primary-dark: #4f46e5;
-            --primary-light: #818cf8;
-            --secondary: #06b6d4;
-            --secondary-dark: #0891b2;
-            --accent: #ec4899;
-            --success: #10b981;
-            --warning: #f59e0b;
-            --danger: #ef4444;
+            --primary: #4f46e5;
+            --primary-dark: #4338ca;
+            --secondary: #0ea5e9;
             --dark: #0f172a;
-            --dark-light: #1e293b;
             --light: #f8fafc;
-            --white: #ffffff;
-            --glass-bg: rgba(255, 255, 255, 0.08);
-            --glass-border: rgba(255, 255, 255, 0.12);
-            --input-bg: rgba(255, 255, 255, 0.06);
-            --shadow-light: 0 4px 20px rgba(99, 102, 241, 0.15);
-            --shadow-medium: 0 8px 40px rgba(99, 102, 241, 0.2);
-            --shadow-heavy: 0 20px 60px rgba(0, 0, 0, 0.3);
-            --blur-amount: 20px;
-            --transition-fast: 0.2s cubic-bezier(0.4, 0.0, 0.2, 1);
-            --transition-smooth: 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            --transition-spring: 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            --success: #10b981;
+            --danger: #ef4444;
+            --card-bg: rgba(255, 255, 255, 0.15);
+            --input-bg: rgba(255, 255, 255, 0.1);
         }
 
         * {
@@ -39,301 +25,135 @@
             padding: 0;
         }
 
-        html {
-            scroll-behavior: smooth;
-        }
-
         body {
             min-height: 100vh;
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: 
-                radial-gradient(circle at 20% 20%, rgba(99, 102, 241, 0.3) 0%, transparent 50%),
-                radial-gradient(circle at 80% 80%, rgba(6, 182, 212, 0.3) 0%, transparent 50%),
-                radial-gradient(circle at 40% 40%, rgba(236, 72, 153, 0.2) 0%, transparent 50%),
-                linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
-            background-size: 100% 100%, 100% 100%, 100% 100%, 100% 100%;
-            background-attachment: fixed;
-            animation: backgroundShift 20s ease-in-out infinite alternate;
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e40af 100%);
+            background-size: 200% 200%;
+            animation: gradientBG 15s ease infinite;
             display: flex;
             justify-content: center;
             align-items: center;
             color: var(--light);
             padding: 20px;
-            position: relative;
-            overflow-x: hidden;
         }
 
-        @keyframes backgroundShift {
-            0% { 
-                background-position: 0% 0%, 100% 100%, 50% 50%, 0% 50%; 
-            }
-            100% { 
-                background-position: 100% 100%, 0% 0%, 75% 25%, 100% 50%; 
-            }
-        }
-
-        /* Floating particles background */
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: 
-                radial-gradient(2px 2px at 20px 30px, rgba(255, 255, 255, 0.15), transparent),
-                radial-gradient(2px 2px at 40px 70px, rgba(99, 102, 241, 0.3), transparent),
-                radial-gradient(1px 1px at 90px 40px, rgba(6, 182, 212, 0.4), transparent),
-                radial-gradient(1px 1px at 130px 80px, rgba(236, 72, 153, 0.3), transparent);
-            background-repeat: repeat;
-            background-size: 200px 100px, 300px 150px, 250px 125px, 180px 90px;
-            animation: particleFloat 30s linear infinite;
-            pointer-events: none;
-            z-index: -1;
-        }
-
-        @keyframes particleFloat {
-            0% { transform: translateY(0px) rotate(0deg); }
-            100% { transform: translateY(-100px) rotate(360deg); }
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
 
         .container {
-            max-width: 520px;
+            max-width: 480px;
             width: 100%;
-            background: var(--glass-bg);
-            backdrop-filter: blur(var(--blur-amount));
-            -webkit-backdrop-filter: blur(var(--blur-amount));
-            border-radius: 32px;
-            border: 1px solid var(--glass-border);
-            box-shadow: var(--shadow-heavy);
-            padding: 48px;
-            position: relative;
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+            padding: 40px;
             transform: translateY(0);
-            animation: containerEnter 1s var(--transition-spring);
-            overflow: hidden;
+            animation: floatIn 0.8s cubic-bezier(0.22, 1, 0.36, 1);
         }
 
-        .container::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
-            animation: shimmer 3s ease-in-out infinite;
-        }
-
-        @keyframes containerEnter {
-            0% { 
-                opacity: 0; 
-                transform: translateY(60px) scale(0.9); 
-                filter: blur(10px);
-            }
-            100% { 
-                opacity: 1; 
-                transform: translateY(0) scale(1); 
-                filter: blur(0);
-            }
-        }
-
-        @keyframes shimmer {
-            0%, 100% { opacity: 0; }
-            50% { opacity: 1; }
+        @keyframes floatIn {
+            0% { opacity: 0; transform: translateY(30px); }
+            100% { opacity: 1; transform: translateY(0); }
         }
 
         header {
             text-align: center;
-            margin-bottom: 40px;
-            position: relative;
+            margin-bottom: 32px;
         }
 
         .app-logo {
-            margin-bottom: 24px;
-            position: relative;
-            display: inline-block;
-            animation: logoFloat 6s ease-in-out infinite;
+            margin-bottom: 16px;
+            animation: pulse 3s infinite;
         }
 
-        .app-logo::before {
-            content: '';
-            position: absolute;
-            top: -10px;
-            left: -10px;
-            right: -10px;
-            bottom: -10px;
-            background: conic-gradient(var(--primary), var(--secondary), var(--accent), var(--primary));
-            border-radius: 50%;
-            opacity: 0;
-            animation: logoGlow 4s ease-in-out infinite alternate;
-            z-index: -1;
-            filter: blur(15px);
-        }
-
-        @keyframes logoFloat {
-            0%, 100% { transform: translateY(0px) rotate(0deg); }
-            25% { transform: translateY(-5px) rotate(1deg); }
-            50% { transform: translateY(-8px) rotate(0deg); }
-            75% { transform: translateY(-3px) rotate(-1deg); }
-        }
-
-        @keyframes logoGlow {
-            0% { opacity: 0; transform: scale(0.8); }
-            100% { opacity: 0.3; transform: scale(1.2); }
-        }
-
-        .app-logo svg {
-            filter: drop-shadow(0 0 20px rgba(99, 102, 241, 0.5));
-            transition: all var(--transition-smooth);
-        }
-
-        .app-logo:hover svg {
-            transform: scale(1.1) rotate(5deg);
-            filter: drop-shadow(0 0 30px rgba(99, 102, 241, 0.8));
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
         }
 
         h1 {
-            font-weight: 800;
-            font-size: clamp(24px, 5vw, 32px);
-            margin-bottom: 12px;
-            background: linear-gradient(135deg, var(--primary-light), var(--secondary), var(--accent));
-            background-size: 200% 200%;
+            font-weight: 700;
+            font-size: 28px;
+            margin-bottom: 8px;
+            background: linear-gradient(90deg, var(--secondary), var(--primary));
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
-            animation: gradientText 4s ease-in-out infinite;
-            position: relative;
-        }
-
-        @keyframes gradientText {
-            0%, 100% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
         }
 
         .subtitle {
-            font-size: 16px;
-            font-weight: 400;
+            font-size: 14px;
             color: rgba(255, 255, 255, 0.7);
-            margin-bottom: 8px;
-            animation: fadeInUp 0.8s var(--transition-smooth) 0.3s both;
+            margin-bottom: 24px;
         }
 
-        .subtitle-accent {
-            font-size: 13px;
-            color: rgba(255, 255, 255, 0.5);
-            font-weight: 300;
-            animation: fadeInUp 0.8s var(--transition-smooth) 0.5s both;
-        }
-
-        @keyframes fadeInUp {
-            0% { opacity: 0; transform: translateY(20px); }
-            100% { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Enhanced Form Elements */
+        /* Form Elements */
         .form-group {
             position: relative;
-            margin-bottom: 32px;
+            margin-bottom: 24px;
         }
 
         .form-input {
             width: 100%;
-            padding: 20px 24px 20px 56px;
-            border-radius: 16px;
-            border: 2px solid transparent;
+            padding: 16px 20px 16px 48px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
             background: var(--input-bg);
-            backdrop-filter: blur(10px);
             color: var(--light);
             font-size: 16px;
-            font-weight: 400;
-            transition: all var(--transition-smooth);
-            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
-            position: relative;
+            transition: all 0.3s;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
 
         .form-input:focus {
             outline: none;
             border-color: var(--primary);
-            background: rgba(255, 255, 255, 0.1);
-            box-shadow: 
-                inset 0 1px 0 rgba(255, 255, 255, 0.2),
-                0 0 0 4px rgba(99, 102, 241, 0.15),
-                var(--shadow-light);
-            transform: translateY(-2px);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.3);
         }
 
         .form-input::placeholder {
-            color: rgba(255, 255, 255, 0.4);
-            transition: color var(--transition-fast);
-        }
-
-        .form-input:focus::placeholder {
-            color: rgba(255, 255, 255, 0.6);
+            color: rgba(255, 255, 255, 0.5);
         }
 
         .input-icon {
             position: absolute;
-            left: 20px;
+            left: 16px;
             top: 50%;
             transform: translateY(-50%);
-            color: rgba(255, 255, 255, 0.5);
-            font-size: 18px;
-            transition: all var(--transition-fast);
-            z-index: 2;
+            color: rgba(255, 255, 255, 0.6);
         }
 
-        .form-group:focus-within .input-icon {
-            color: var(--primary-light);
-            transform: translateY(-50%) scale(1.1);
-        }
-
-        /* Enhanced Button */
         .btn {
             display: block;
             width: 100%;
-            padding: 20px 32px;
+            padding: 16px;
             border: none;
-            border-radius: 16px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            background-size: 200% 200%;
+            border-radius: 12px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
             color: white;
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
-            box-shadow: var(--shadow-medium);
-            transition: all var(--transition-smooth);
+            box-shadow: 0 4px 14px rgba(79, 70, 229, 0.4);
+            transition: all 0.3s;
             position: relative;
             overflow: hidden;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            transition: left 0.5s;
         }
 
         .btn:hover {
-            transform: translateY(-3px) scale(1.02);
-            box-shadow: 
-                var(--shadow-heavy),
-                0 0 30px rgba(99, 102, 241, 0.4);
-            background-position: 100% 0%;
-        }
-
-        .btn:hover::before {
-            left: 100%;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(79, 70, 229, 0.5);
         }
 
         .btn:active {
-            transform: translateY(-1px) scale(1.01);
-            transition: all 0.1s;
+            transform: translateY(1px);
         }
 
         .btn .btn-text {
@@ -345,44 +165,144 @@
         }
 
         .btn .btn-icon {
-            margin-right: 12px;
-            transition: transform var(--transition-fast);
+            margin-right: 8px;
         }
 
-        .btn:hover .btn-icon {
-            transform: scale(1.2) rotate(5deg);
+        .ripple {
+            position: absolute;
+            border-radius: 50%;
+            transform: scale(0);
+            animation: ripple 0.6s linear;
+            background: rgba(255, 255, 255, 0.4);
         }
 
-        /* Advanced Options Panel */
-        .options-panel {
+        @keyframes ripple {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+
+        /* QR Result Section */
+        .qr-result {
             margin-top: 32px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            padding-top: 32px;
-            animation: fadeInUp 0.8s var(--transition-smooth) 0.7s both;
+            text-align: center;
+            min-height: 200px;
+        }
+
+        .result-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            opacity: 0;
+            animation: fadeIn 0.5s 0.2s forwards;
+        }
+
+        .qr-container {
+            background: white;
+            padding: 16px;
+            border-radius: 16px;
+            display: inline-block;
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+            position: relative;
+            opacity: 0;
+            transform: scale(0.9);
+            animation: scaleIn 0.5s 0.3s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+
+        @keyframes scaleIn {
+            to { 
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .qr-image {
+            max-width: 100%;
+            max-height: 240px;
+            border-radius: 8px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+            opacity: 0;
+            animation: fadeIn 0.5s 0.4s forwards;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 12px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .action-btn-primary {
+            background: var(--primary);
+            color: white;
+            border: none;
+            box-shadow: 0 4px 10px rgba(79, 70, 229, 0.3);
+        }
+
+        .action-btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--light);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .action-btn i {
+            margin-right: 6px;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Spinner */
+        .spinner {
+            width: 48px;
+            height: 48px;
+            margin: 40px auto;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--primary);
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Options Panel */
+        .options-panel {
+            margin-top: 24px;
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+            padding-top: 24px;
         }
 
         .options-title {
-            font-size: 18px;
+            font-size: 16px;
             font-weight: 600;
-            margin-bottom: 24px;
+            margin-bottom: 16px;
             display: flex;
             align-items: center;
             cursor: pointer;
-            padding: 12px 16px;
-            border-radius: 12px;
-            transition: all var(--transition-fast);
-            position: relative;
-        }
-
-        .options-title:hover {
-            background: rgba(255, 255, 255, 0.05);
-            transform: translateX(4px);
         }
 
         .options-title i {
-            margin-right: 12px;
-            transition: transform var(--transition-smooth);
-            font-size: 16px;
+            margin-right: 8px;
+            transition: transform 0.3s;
         }
 
         .options-title.collapsed i {
@@ -391,300 +311,69 @@
 
         .options-content {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 24px;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
             overflow: hidden;
-            max-height: 800px;
-            transition: all var(--transition-smooth);
-            opacity: 1;
+            max-height: 500px;
+            transition: max-height 0.3s ease;
         }
 
         .options-content.collapsed {
             max-height: 0;
-            opacity: 0;
-            margin-top: -24px;
         }
 
         .option-group {
-            position: relative;
+            margin-bottom: 16px;
         }
 
         .option-label {
             display: block;
-            margin-bottom: 12px;
+            margin-bottom: 8px;
             font-size: 14px;
-            font-weight: 500;
-            color: rgba(255, 255, 255, 0.8);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+            color: rgba(255, 255, 255, 0.7);
         }
 
-        .option-input, .option-select {
+        .option-input {
             width: 100%;
-            padding: 14px 16px;
-            border-radius: 12px;
-            border: 2px solid transparent;
+            padding: 10px 12px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
             background: var(--input-bg);
-            backdrop-filter: blur(10px);
             color: var(--light);
             font-size: 14px;
-            font-weight: 400;
-            transition: all var(--transition-fast);
-            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
-        }
-
-        .option-input:focus, .option-select:focus {
-            outline: none;
-            border-color: var(--primary);
-            background: rgba(255, 255, 255, 0.1);
-            box-shadow: 
-                inset 0 1px 0 rgba(255, 255, 255, 0.2),
-                0 0 0 3px rgba(99, 102, 241, 0.15);
         }
 
         .color-option {
             display: flex;
             align-items: center;
-            gap: 12px;
         }
 
         .color-preview {
-            width: 32px;
-            height: 32px;
-            border-radius: 8px;
-            border: 2px solid rgba(255, 255, 255, 0.2);
-            transition: all var(--transition-fast);
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .color-preview::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: conic-gradient(transparent, rgba(255, 255, 255, 0.3), transparent);
-            animation: colorPreviewSpin 3s linear infinite;
-            opacity: 0;
-            transition: opacity var(--transition-fast);
-        }
-
-        .color-preview:hover::before {
-            opacity: 1;
-        }
-
-        @keyframes colorPreviewSpin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .color-preview:hover {
-            transform: scale(1.1);
-            border-color: rgba(255, 255, 255, 0.4);
-        }
-
-        /* QR Result Section */
-        .qr-result {
-            margin-top: 40px;
-            text-align: center;
-            min-height: 200px;
-        }
-
-        .result-title {
-            font-size: 20px;
-            font-weight: 600;
-            margin-bottom: 24px;
-            color: var(--light);
-            opacity: 0;
-            animation: slideInDown 0.6s var(--transition-spring) 0.2s forwards;
-        }
-
-        @keyframes slideInDown {
-            0% { 
-                opacity: 0; 
-                transform: translateY(-30px) scale(0.9); 
-            }
-            100% { 
-                opacity: 1; 
-                transform: translateY(0) scale(1); 
-            }
-        }
-
-        .qr-container {
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.85));
-            padding: 24px;
-            border-radius: 24px;
-            display: inline-block;
-            box-shadow: 
-                0 20px 40px rgba(0, 0, 0, 0.15),
-                inset 0 1px 0 rgba(255, 255, 255, 0.8);
-            position: relative;
-            opacity: 0;
-            transform: scale(0.8) rotateY(15deg);
-            animation: qrAppear 0.8s var(--transition-spring) 0.4s forwards;
-            overflow: hidden;
-        }
-
-        .qr-container::before {
-            content: '';
-            position: absolute;
-            top: -2px;
-            left: -2px;
-            right: -2px;
-            bottom: -2px;
-            background: linear-gradient(45deg, var(--primary), var(--secondary), var(--accent), var(--primary));
-            background-size: 400% 400%;
-            border-radius: 26px;
-            z-index: -1;
-            animation: borderGlow 3s ease-in-out infinite;
-        }
-
-        @keyframes qrAppear {
-            0% { 
-                opacity: 0; 
-                transform: scale(0.8) rotateY(15deg); 
-            }
-            100% { 
-                opacity: 1; 
-                transform: scale(1) rotateY(0deg); 
-            }
-        }
-
-        @keyframes borderGlow {
-            0%, 100% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-        }
-
-        .qr-image {
-            max-width: 100%;
-            max-height: 280px;
-            border-radius: 12px;
-            transition: transform var(--transition-smooth);
-        }
-
-        .qr-container:hover .qr-image {
-            transform: scale(1.05);
-        }
-
-        .action-buttons {
-            display: flex;
-            gap: 16px;
-            margin-top: 24px;
-            opacity: 0;
-            animation: fadeInUp 0.6s var(--transition-smooth) 0.6s forwards;
-        }
-
-        .action-btn {
-            flex: 1;
-            padding: 16px 24px;
-            border-radius: 14px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all var(--transition-smooth);
-            position: relative;
-            overflow: hidden;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .action-btn-primary {
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            color: white;
-            border: none;
-            box-shadow: var(--shadow-light);
-        }
-
-        .action-btn-primary:hover {
-            transform: translateY(-2px) scale(1.05);
-            box-shadow: var(--shadow-medium);
-        }
-
-        .action-btn-secondary {
-            background: rgba(255, 255, 255, 0.08);
-            color: var(--light);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(10px);
-        }
-
-        .action-btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.15);
-            border-color: rgba(255, 255, 255, 0.3);
-            transform: translateY(-2px) scale(1.05);
-        }
-
-        .action-btn i {
+            width: 24px;
+            height: 24px;
+            border-radius: 6px;
             margin-right: 8px;
-            transition: transform var(--transition-fast);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
-        .action-btn:hover i {
-            transform: scale(1.2);
-        }
-
-        /* Enhanced Spinner */
-        .spinner {
-            width: 56px;
-            height: 56px;
-            margin: 60px auto;
-            border: 3px solid rgba(255, 255, 255, 0.1);
-            border-radius: 50%;
-            border-top-color: var(--primary);
-            border-left-color: var(--secondary);
-            animation: spin 1s linear infinite, pulseSpinner 2s ease-in-out infinite;
-            position: relative;
-        }
-
-        .spinner::before {
-            content: '';
-            position: absolute;
-            top: -6px;
-            left: -6px;
-            right: -6px;
-            bottom: -6px;
-            border: 2px solid transparent;
-            border-radius: 50%;
-            border-top-color: rgba(99, 102, 241, 0.3);
-            animation: spin 2s linear infinite reverse;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        @keyframes pulseSpinner {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-        }
-
-        /* Enhanced Toast */
+        /* Toast Notification */
         .toast {
             position: fixed;
-            bottom: 32px;
+            bottom: 24px;
             left: 50%;
-            transform: translateX(-50%) translateY(120px);
-            background: rgba(16, 185, 129, 0.95);
-            backdrop-filter: blur(20px);
+            transform: translateX(-50%) translateY(100px);
+            background: rgba(16, 185, 129, 0.9);
             color: white;
-            padding: 16px 32px;
-            border-radius: 16px;
+            padding: 12px 24px;
+            border-radius: 8px;
             font-size: 14px;
-            font-weight: 600;
-            box-shadow: 
-                0 20px 40px rgba(0, 0, 0, 0.2),
-                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            font-weight: 500;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
             display: flex;
             align-items: center;
             opacity: 0;
-            transition: all var(--transition-spring);
-            z-index: 1000;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s;
+            z-index: 100;
         }
 
         .toast.show {
@@ -693,112 +382,31 @@
         }
 
         .toast i {
-            margin-right: 12px;
-            font-size: 16px;
+            margin-right: 8px;
         }
 
         .toast.error {
-            background: rgba(239, 68, 68, 0.95);
+            background: rgba(239, 68, 68, 0.9);
         }
 
-        /* Responsive Design */
-        @media (max-width: 768px) {
+        /* Responsive */
+        @media (max-width: 580px) {
             .container {
-                padding: 32px 24px;
-                border-radius: 24px;
-                margin: 10px;
-            }
-
-            h1 {
-                font-size: 28px;
-            }
-
-            .subtitle {
-                font-size: 14px;
-            }
-
-            .form-input {
-                padding: 16px 20px 16px 48px;
-                font-size: 16px;
-            }
-
-            .btn {
-                padding: 18px 28px;
-                font-size: 15px;
-            }
-
-            .options-content {
-                grid-template-columns: 1fr;
-                gap: 20px;
-            }
-
-            .action-buttons {
-                flex-direction: column;
-                gap: 12px;
-            }
-
-            .action-btn {
-                padding: 14px 20px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .container {
-                padding: 24px 16px;
-                margin: 5px;
+                padding: 24px;
+                border-radius: 20px;
             }
 
             h1 {
                 font-size: 24px;
             }
 
-            .form-input {
-                padding: 14px 16px 14px 44px;
-                font-size: 15px;
+            .subtitle {
+                font-size: 13px;
             }
 
-            .input-icon {
-                left: 16px;
-                font-size: 16px;
+            .options-content {
+                grid-template-columns: 1fr;
             }
-
-            .btn {
-                padding: 16px 24px;
-                font-size: 14px;
-            }
-        }
-
-        /* Accessibility Enhancements */
-        @media (prefers-reduced-motion: reduce) {
-            *, *::before, *::after {
-                animation-duration: 0.01ms !important;
-                animation-iteration-count: 1 !important;
-                transition-duration: 0.01ms !important;
-            }
-            
-            body::before {
-                animation: none;
-            }
-        }
-
-        .sr-only {
-            position: absolute;
-            width: 1px;
-            height: 1px;
-            padding: 0;
-            margin: -1px;
-            overflow: hidden;
-            clip: rect(0, 0, 0, 0);
-            white-space: nowrap;
-            border: 0;
-        }
-
-        /* Focus indicators */
-        .btn:focus-visible,
-        .action-btn:focus-visible,
-        .options-title:focus-visible {
-            outline: 2px solid var(--primary-light);
-            outline-offset: 2px;
         }
     </style>
 </head>
@@ -806,100 +414,88 @@
     <main class="container" role="main" aria-label="QR Code Generator">
         <header>
             <div class="app-logo">
-                <svg width="72" height="72" viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="QR Code Generator Logo">
-                    <rect x="6" y="6" width="24" height="24" rx="3" fill="url(#gradient1)" />
-                    <rect x="42" y="6" width="24" height="24" rx="3" fill="url(#gradient2)" />
-                    <rect x="6" y="42" width="24" height="24" rx="3" fill="url(#gradient3)" />
-                    <rect x="42" y="42" width="10" height="10" rx="2" fill="url(#gradient4)" />
-                    <rect x="56" y="42" width="10" height="10" rx="2" fill="url(#gradient4)" />
-                    <rect x="42" y="56" width="10" height="10" rx="2" fill="url(#gradient4)" />
-                    <rect x="56" y="56" width="10" height="10" rx="2" fill="url(#gradient4)" />
-                    <defs>
-                        <linearGradient id="gradient1" x1="0" y1="0" x2="1" y2="1">
-                            <stop offset="0%" stop-color="#6366f1"/>
-                            <stop offset="100%" stop-color="#818cf8"/>
-                        </linearGradient>
-                        <linearGradient id="gradient2" x1="0" y1="0" x2="1" y2="1">
-                            <stop offset="0%" stop-color="#06b6d4"/>
-                            <stop offset="100%" stop-color="#0891b2"/>
-                        </linearGradient>
-                        <linearGradient id="gradient3" x1="0" y1="0" x2="1" y2="1">
-                            <stop offset="0%" stop-color="#ec4899"/>
-                            <stop offset="100%" stop-color="#be185d"/>
-                        </linearGradient>
-                        <linearGradient id="gradient4" x1="0" y1="0" x2="1" y2="1">
-                            <stop offset="0%" stop-color="#8b5cf6"/>
-                            <stop offset="100%" stop-color="#7c3aed"/>
-                        </linearGradient>
-                    </defs>
+                <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="8" y="8" width="20" height="20" rx="2" fill="#4F46E5" />
+                    <rect x="36" y="8" width="20" height="20" rx="2" fill="#4F46E5" />
+                    <rect x="8" y="36" width="20" height="20" rx="2" fill="#4F46E5" />
+                    <rect x="36" y="36" width="8" height="8" rx="1" fill="#4F46E5" />
+                    <rect x="48" y="36" width="8" height="8" rx="1" fill="#4F46E5" />
+                    <rect x="36" y="48" width="8" height="8" rx="1" fill="#4F46E5" />
+                    <rect x="48" y="48" width="8" height="8" rx="1" fill="#4F46E5" />
                 </svg>
             </div>
             <h1>QR Code Generator</h1>
-            <p class="subtitle">Create stunning QR codes with advanced customization</p>
-            <p class="subtitle-accent">Premium design • Lightning fast • Mobile optimized</p>
+            <p class="subtitle">Create customized QR codes in seconds</p>
         </header>
 
         <form id="qrForm" autocomplete="off">
             <div class="form-group">
-                                                <input type="text" id="qrText" class="form-input" placeholder="Enter text or URL" required>
-                                <i class="fas fa-link input-icon"></i>
-                            </div>
-                
-                            <button type="submit" class="btn">
-                                <span class="btn-text">
-                                    <i class="fas fa-qrcode btn-icon"></i>
-                                    Generate QR Code
-                                </span>
-                            </button>
-                        </form>
-                
-                        <div class="options-panel">
-                            <div class="options-title" id="optionsToggle">
-                                <i class="fas fa-sliders-h"></i>
-                                Advanced Options
-                            </div>
-                            <div class="options-content" id="optionsContent">
-                                <div class="option-group">
-                                    <label class="option-label" for="qrSize">Size (px)</label>
-                                    <input type="number" id="qrSize" class="option-input" value="200" min="100" max="1000" step="50">
-                                </div>
-                                <div class="option-group">
-                                    <label class="option-label">Colors</label>
-                                    <div class="color-option">
-                                        <input type="color" id="darkColor" class="option-input" value="#000000" aria-label="QR code dark color">
-                                        <span class="color-preview" id="darkPreview"></span>
-                                    </div>
-                                    <div class="color-option">
-                                        <input type="color" id="lightColor" class="option-input" value="#ffffff" aria-label="QR code light color">
-                                        <span class="color-preview" id="lightPreview"></span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                
-                        <div class="qr-result" id="qrResult">
-                            <!-- QR code will be inserted here -->
-                        </div>
-                
-                        <div class="action-buttons" id="actionButtons" style="display: none;">
-                            <button class="action-btn action-btn-primary" id="downloadBtn">
-                                <i class="fas fa-download"></i>
-                                Download
-                            </button>
-                            <button class="action-btn action-btn-secondary" id="shareBtn">
-                                <i class="fas fa-share-alt"></i>
-                                Share
-                            </button>
-                        </div>
-                    </main>
-                
-                    <div class="toast" id="toast" role="alert">
-                        <i class="fas fa-check-circle"></i>
-                        <span id="toastMessage"></span>
+                <input type="text" id="qrData" class="form-input" placeholder="Enter text, URL or contact information" 
+                    aria-label="QR Code content" required />
+                <i class="fa-solid fa-link input-icon"></i>
+            </div>
+
+            <button type="submit" class="btn" id="generateBtn">
+                <span class="btn-text">
+                    <i class="fa-solid fa-qrcode btn-icon"></i>
+                    Generate QR Code
+                </span>
+            </button>
+
+            <div class="options-panel">
+                <div class="options-title" id="optionsToggle">
+                    <i class="fa-solid fa-cog"></i>
+                    Advanced Options
+                </div>
+                <div class="options-content collapsed" id="optionsContent">
+                    <div class="option-group">
+                        <label class="option-label" for="qrSize">QR Size</label>
+                        <select id="qrSize" class="option-input">
+                            <option value="300">Medium (300×300)</option>
+                            <option value="200">Small (200×200)</option>
+                            <option value="400">Large (400×400)</option>
+                            <option value="500">X-Large (500×500)</option>
+                        </select>
                     </div>
-                
-                    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-                    <script>
+                    
+                    <!-- <div class="option-group">
+                        <label class="option-label" for="qrCorrection">Error Correction</label>
+                        <select id="qrCorrection" class="option-input">
+                            <option value="M">Medium (M)</option>
+                            <option value="L">Low (L)</option>
+                            <option value="Q">Quartile (Q)</option>
+                            <option value="H">High (H)</option>
+                        </select>
+                    </div> -->
+
+                    <div class="option-group">
+                        <label class="option-label" for="qrFgColor">Foreground Color</label>
+                        <div class="color-option">
+                            <div class="color-preview" id="fgColorPreview" style="background-color: #000000"></div>
+                            <input type="color" id="qrFgColor" class="option-input" value="#000000" />
+                        </div>
+                    </div>
+
+                    <div class="option-group">
+                        <label class="option-label" for="qrBgColor">Background Color</label>
+                        <div class="color-option">
+                            <div class="color-preview" id="bgColorPreview" style="background-color: #FFFFFF"></div>
+                            <input type="color" id="qrBgColor" class="option-input" value="#FFFFFF" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        <div class="qr-result" id="qrResult" aria-live="polite" aria-atomic="true"></div>
+        
+        <div class="toast" id="toast" role="alert">
+            <i class="fa-solid fa-check"></i>
+            <span id="toastMessage">QR code downloaded successfully!</span>
+        </div>
+    </main>
+
+    <script>
         // DOM Elements
         const qrForm = document.getElementById('qrForm');
         const qrResult = document.getElementById('qrResult');
@@ -1080,5 +676,5 @@
     }
 }
     </script>
-    </body>
+</body>
 </html>
